@@ -95,9 +95,7 @@ void quick_sort(std::vector<int>& v) {
 
 // Quick-sort w/ Pivot selection Big-Theta(n lg n)
 int selection(std::vector<int>& v, int start, int end) {
-  int len = end - start + 1;
-  
-  if (len == 1) {
+  if (start == end) {
     return v[end];
   }
 
@@ -107,7 +105,8 @@ int selection(std::vector<int>& v, int start, int end) {
   int n = start;
   for (int i = start,
 	 j = start + 4,
-	 r = len % 5 > 0 ? len % 5 - 1 : 0,
+	 len = end - start + 1,
+  	 r = len % 5 > 0 ? len % 5 - 1 : 0,
 	 mr = (r - r % 2) / 2;
        i < end; i += 5, j += 5, ++n)
     swap(v, n, i + (j <= end ? 2 : mr));
