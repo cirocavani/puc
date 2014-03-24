@@ -175,7 +175,7 @@ int main() {
   std::cout << v5 << std::endl;
 
   const std::vector<int> v6 { 13, 19, 9, 5, 12, 8, 7, 4, 11, 2, 6, 21 };
-  std::cout << v5 << std::endl;
+  std::cout << v6 << std::endl;
 
   auto test_order = [](const std::vector<int>& v) -> std::string {
     if (v.empty())
