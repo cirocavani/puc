@@ -45,8 +45,8 @@ void merge_sort(std::vector<int>& v, int start, int end) {
   if (start >= end)
     return;
 
-  int len = end - start + 1;
-  int middle = start + (len - len % 2) / 2 - 1;
+  int len = end - start + 1,
+    middle = start + (len - len % 2) / 2 - 1;
   merge_sort(v, start, middle);
   merge_sort(v, middle + 1, end);
 
@@ -95,9 +95,8 @@ void quick_sort(std::vector<int>& v) {
 
 // Quick-sort w/ Pivot selection Big-Theta(n lg n)
 int select_median(std::vector<int>& v, int start, int end) {
-  if (start == end) {
+  if (start == end)
     return v[start];
-  }
 
   for (int i = start, j = start + 4; i < end; i += 5, j += 5)
     insertion_sort(v, i, j <= end ? j : end);
@@ -127,9 +126,12 @@ int select_k(std::vector<int>& v, int start, int end, int k) {
     if (i >= j) break;
     swap(v, i, j);
   }
-  if (k == i) return pivot;
-  else if (k < i) return select_k(v, start, i - 1, k);
-  else return select_k(v, j + 1, end, k - i);
+  if (k == i)
+    return pivot;
+  else if (k < i)
+    return select_k(v, start, i - 1, k);
+  else
+    return select_k(v, j + 1, end, k - i);
 }
 
 void quick_sort2(std::vector<int>& v, int start, int end) {
@@ -137,7 +139,7 @@ void quick_sort2(std::vector<int>& v, int start, int end) {
     return;
 
   int len = end - start + 1,
-    m = start + (len - len % 2) - 1,
+    m = start + (len - len % 2) / 2 - 1,
     pivot = select_k(v, start, end, m),
     i = start - 1,
     j = end + 1;
@@ -159,13 +161,13 @@ void quick_sort2(std::vector<int>& v) {
 int main() {
   std::cout << "Sort" << std::endl;
 
-  const std::vector<int> v1 { 4, 3, 2, 1 };
+  const std::vector<int> v1 { 5, 4, 3, 2, 1 };
   std::cout << v1 << std::endl;
 
-  const std::vector<int> v2 { 5, 5, 5, 5 };
+  const std::vector<int> v2 { 5, 5, 5, 5, 5 };
   std::cout << v2 << std::endl;
 
-  const std::vector<int> v3 { 1, 2, 3, 4 };
+  const std::vector<int> v3 { 1, 2, 3, 4, 5 };
   std::cout << v3 << std::endl;
 
   const std::vector<int> v4 { 10 };
@@ -178,8 +180,6 @@ int main() {
   std::cout << v6 << std::endl;
 
   auto test_order = [](const std::vector<int>& v) -> std::string {
-    if (v.empty())
-      return "pass";
     for (int i = 0, j = v.size() - 1; i < j; ++i) {
       if (v[i] > v[j])
 	return "fail";
@@ -190,8 +190,8 @@ int main() {
   auto test_sort = [&test_order](void (*sort)(std::vector<int>&), const std::vector<int>& v) {
     auto mv = v; // copy mutable
     sort(mv);
-    auto ok = test_order(mv);
-    std::cout << ok << "... " << v << " -> " << mv << std::endl;
+    auto result = test_order(mv);
+    std::cout << result << "... " << v << " -> " << mv << std::endl;
   };
 
   auto test = [&](std::string label, void (*sort)(std::vector<int>&)) {
