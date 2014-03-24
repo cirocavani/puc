@@ -18,6 +18,12 @@ std::ostream& operator<<(std::ostream& out, const std::vector<int>& v) {
   return out;
 }
 
+void swap(std::vector<int>& v, int i, int j) {
+  int t = v[i];
+  v[i] = v[j];
+  v[j] = t;
+}
+
 
 // Insertion-sort Big-Theta(n2)
 void insertion_sort(std::vector<int>& v, int start, int end) {
@@ -39,8 +45,8 @@ void merge_sort(std::vector<int>& v, int start, int end) {
   if (start >= end)
     return;
 
-  int len = start + end + 1;
-  int middle = (len - len % 2) / 2 - 1;
+  int len = end - start + 1;
+  int middle = start + (len - len % 2) / 2 - 1;
   merge_sort(v, start, middle);
   merge_sort(v, middle + 1, end);
 
@@ -69,15 +75,14 @@ void quick_sort(std::vector<int>& v, int start, int end) {
   if (start >= end)
     return;
 
-  int pivot = v[end], i = start - 1, j = end + 1;
+  int pivot = v[end],
+    i = start - 1,
+    j = end + 1;
   for (;;) {
     while (v[++i] < pivot);
     while (v[--j] > pivot);
     if (i >= j) break;
-
-    int t = v[i];
-    v[i] = v[j];
-    v[j] = t;
+    swap(v, i, j);
   }
 
   quick_sort(v, start, i - 1);
@@ -89,8 +94,48 @@ void quick_sort(std::vector<int>& v) {
 }
 
 // Quick-sort w/ Pivot selection Big-Theta(n lg n)
-//void quick_sort2(std::vector<int>& v) {
-//}
+int selection(std::vector<int>& v, int start, int end) {
+  int len = end - start + 1;
+  
+  if (len == 1) {
+    return v[end];
+  }
+
+  for (int i = start, j = start + 4; i < end; i += 5, j += 5)
+    insertion_sort(v, i, j <= end ? j : end);
+
+  int n = start;
+  for (int i = start,
+	 j = start + 4,
+	 r = len % 5 > 0 ? len % 5 - 1 : 0,
+	 mr = (r - r % 2) / 2;
+       i < end; i += 5, j += 5, ++n)
+    swap(v, n, i + (j <= end ? 2 : mr));
+
+  return selection(v, start, n - 1);
+}
+
+void quick_sort2(std::vector<int>& v, int start, int end) {
+  if (start >= end)
+    return;
+
+  int pivot = selection(v, start, end),
+    i = start - 1,
+    j = end + 1;
+  for (;;) {
+    while (v[++i] < pivot);
+    while (v[--j] > pivot);
+    if (i >= j) break;
+    swap(v, i, j);
+  }
+
+  quick_sort2(v, start, i - 1);
+  quick_sort2(v, j + 1, end);
+}
+
+void quick_sort2(std::vector<int>& v) {
+  quick_sort2(v, 0, v.size() - 1);
+}
 
 int main() {
   std::cout << "Sort" << std::endl;
@@ -129,5 +174,5 @@ int main() {
   test("Insertion-sort, Big-Theta(n2)", insertion_sort);
   test("Merge-sort, Big-Theta(n lg n)", merge_sort);
   test("Quick-sort, Big-Theta(n lg n)", quick_sort);
-  //test("Quick-sort (Pivot), Big-Theta(n lg n)", quick_sort2);
+  test("Quick-sort (Pivot), Big-Theta(n lg n)", quick_sort2);
 }

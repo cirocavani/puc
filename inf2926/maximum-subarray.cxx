@@ -76,8 +76,8 @@ S max_dac_rec(const std::vector<int>& v, int start, int end) {
   if (start == end)
     return S(start, end, v[start] > 0 ? v[start] : 0);
 
-  int len = start + end + 1;
-  int middle = (len - len % 2) / 2 - 1;
+  int len = end - start + 1;
+  int middle = start + (len - len % 2) / 2 - 1;
   S head_max = max_dac_rec(v, start, middle);
   S tail_max = max_dac_rec(v, middle + 1, end);
   S cross_max = max_dac_middle(v, start, end, middle);
