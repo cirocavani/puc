@@ -94,9 +94,9 @@ void quick_sort(std::vector<int>& v) {
 }
 
 // Quick-sort w/ Pivot selection Big-Theta(n lg n)
-int selection(std::vector<int>& v, int start, int end) {
+int select_median(std::vector<int>& v, int start, int end) {
   if (start == end) {
-    return v[end];
+    return v[start];
   }
 
   for (int i = start, j = start + 4; i < end; i += 5, j += 5)
@@ -111,14 +111,34 @@ int selection(std::vector<int>& v, int start, int end) {
        i < end; i += 5, j += 5, ++n)
     swap(v, n, i + (j <= end ? 2 : mr));
 
-  return selection(v, start, n - 1);
+  return select_median(v, start, n - 1);
+}
+
+int select_k(std::vector<int>& v, int start, int end, int k) {
+  if (start >= end)
+    return v[start];
+
+  int pivot = select_median(v, start, end),
+    i = start - 1,
+    j = end + 1;
+  for (;;) {
+    while (v[++i] < pivot);
+    while (v[--j] > pivot);
+    if (i >= j) break;
+    swap(v, i, j);
+  }
+  if (k == i) return pivot;
+  else if (k < i) return select_k(v, start, i - 1, k);
+  else return select_k(v, j + 1, end, k - i);
 }
 
 void quick_sort2(std::vector<int>& v, int start, int end) {
   if (start >= end)
     return;
 
-  int pivot = selection(v, start, end),
+  int len = end - start + 1,
+    m = start + (len - len % 2) - 1,
+    pivot = select_k(v, start, end, m),
     i = start - 1,
     j = end + 1;
   for (;;) {
@@ -154,10 +174,24 @@ int main() {
   const std::vector<int> v5 { 10, 3, 30, 3, 7, 3 };
   std::cout << v5 << std::endl;
 
-  auto test_sort = [](void (*sort)(std::vector<int>&), const std::vector<int>& v) {
+  const std::vector<int> v6 { 13, 19, 9, 5, 12, 8, 7, 4, 11, 2, 6, 21 };
+  std::cout << v5 << std::endl;
+
+  auto test_order = [](const std::vector<int>& v) -> std::string {
+    if (v.empty())
+      return "pass";
+    for (int i = 0, j = v.size() - 1; i < j; ++i) {
+      if (v[i] > v[j])
+	return "fail";
+    }
+    return "pass";
+  };
+
+  auto test_sort = [&test_order](void (*sort)(std::vector<int>&), const std::vector<int>& v) {
     auto mv = v; // copy mutable
     sort(mv);
-    std::cout << v << " -> " << mv << std::endl;
+    auto ok = test_order(mv);
+    std::cout << ok << "... " << v << " -> " << mv << std::endl;
   };
 
   auto test = [&](std::string label, void (*sort)(std::vector<int>&)) {
@@ -168,6 +202,7 @@ int main() {
     test(v3);
     test(v4);
     test(v5);
+    test(v6);
   };
 
   test("Insertion-sort, Big-Theta(n2)", insertion_sort);
