@@ -208,7 +208,7 @@ int main() {
 
   auto test_order = [](const std::vector<int>& v) -> std::string {
     for (int i = 0, j = v.size() - 1; i < j; ++i) {
-      if (v[i] > v[j])
+      if (v[i] > v[i + 1])
 	return "fail";
     }
     return "pass";
