@@ -1,5 +1,7 @@
 #include <iostream>
 #include <vector>
+#include <random>
+#include <limits>
 
 std::ostream& operator<<(std::ostream& out, const std::vector<int>& v) {
   if (v.empty())
@@ -162,22 +164,47 @@ int main() {
   std::cout << "Sort" << std::endl;
 
   const std::vector<int> v1 { 5, 4, 3, 2, 1 };
-  std::cout << v1 << std::endl;
+  std::cout << "1: " << v1 << std::endl;
 
   const std::vector<int> v2 { 5, 5, 5, 5, 5 };
-  std::cout << v2 << std::endl;
+  std::cout << "2: " << v2 << std::endl;
 
   const std::vector<int> v3 { 1, 2, 3, 4, 5 };
-  std::cout << v3 << std::endl;
+  std::cout << "3: " << v3 << std::endl;
 
   const std::vector<int> v4 { 10 };
-  std::cout << v4 << std::endl;
+  std::cout << "4: " << v4 << std::endl;
 
   const std::vector<int> v5 { 10, 3, 30, 3, 7, 3 };
-  std::cout << v5 << std::endl;
+  std::cout << "5: " << v5 << std::endl;
 
   const std::vector<int> v6 { 13, 19, 9, 5, 12, 8, 7, 4, 11, 2, 6, 21 };
-  std::cout << v6 << std::endl;
+  std::cout << "6: " << v6 << std::endl;
+
+  std::random_device rnd;
+  std::uniform_int_distribution<int> rnd_size(0, 10 * 1000);
+  std::uniform_int_distribution<int>
+    rnd_value(std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
+
+  auto rnd_vector = [&rnd, &rnd_size, &rnd_value]() -> std::vector<int> {
+    int n = rnd_size(rnd);
+    std::vector<int> v(n);
+    for (int i = 0; i < n; ++i)
+      v[i] = rnd_value(rnd);
+    return v;
+  };
+
+  const std::vector<int> v7 = rnd_vector();
+  std::cout << "7: " << v7.size() << std::endl;
+
+  const std::vector<int> v8 = rnd_vector();
+  std::cout << "8: " << v8.size() << std::endl;
+
+  const std::vector<int> v9 = rnd_vector();
+  std::cout << "9: " << v9.size() << std::endl;
+
+  const std::vector<int> v10 = rnd_vector();
+  std::cout << "10: " << v10.size() << std::endl;
 
   auto test_order = [](const std::vector<int>& v) -> std::string {
     for (int i = 0, j = v.size() - 1; i < j; ++i) {
@@ -187,22 +214,26 @@ int main() {
     return "pass";
   };
 
-  auto test_sort = [&test_order](void (*sort)(std::vector<int>&), const std::vector<int>& v) {
+  auto test_sort = [&test_order](std::string name, void (*sort)(std::vector<int>&), const std::vector<int>& v) {
     auto mv = v; // copy mutable
     sort(mv);
     auto result = test_order(mv);
-    std::cout << result << "... " << v << " -> " << mv << std::endl;
+    std::cout << name << ": " << result << std::endl;
   };
 
   auto test = [&](std::string label, void (*sort)(std::vector<int>&)) {
     std::cout << label << std::endl;
-    auto test = [&](const std::vector<int>& v) { test_sort(sort, v); };
-    test(v1);
-    test(v2);
-    test(v3);
-    test(v4);
-    test(v5);
-    test(v6);
+    auto test = [&](std::string name, const std::vector<int>& v) { test_sort(name, sort, v); };
+    test("1", v1);
+    test("2", v2);
+    test("3", v3);
+    test("4", v4);
+    test("5", v5);
+    test("6", v6);
+    test("7", v7);
+    test("8", v8);
+    test("9", v9);
+    test("10", v10);
   };
 
   test("Insertion-sort, Big-Theta(n2)", insertion_sort);
