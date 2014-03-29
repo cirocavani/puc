@@ -1,14 +1,13 @@
 #include <iostream>
-#include <array>
+#include <vector>
 #include <random>
-#include <limits>
 
 using uint = unsigned int;
 
 template<uint N>
 struct matrix {
-  std::array<int, N * N> data;
-  matrix(int v = 0) { data.fill(v); }
+  std::vector<int> data;
+  matrix(int v = 0) : data(std::vector<int>(N * N, v)) { }
   int& operator()(uint i, uint j) {
     return data[i * N + j];
   } 
