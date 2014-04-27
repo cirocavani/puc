@@ -39,6 +39,7 @@ int bsearch_first(const std::vector<int>& v, const int c, const int i, const int
 
   int n = i + j,
     m = (n - n % 2) / 2;
+
   if (c > v[m])
     return bsearch_first(v, c, m + 1, j);
   else
