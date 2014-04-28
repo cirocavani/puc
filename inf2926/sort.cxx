@@ -115,7 +115,7 @@ int select_median(std::vector<int>& v, int start, int end) {
   return select_median(v, start, n - 1);
 }
 
-int select_k(std::vector<int>& v, int start, int end, int k) {
+int select_median(std::vector<int>& v, int k, int start, int end) {
   if (start >= end)
     return v[start];
 
@@ -131,9 +131,9 @@ int select_k(std::vector<int>& v, int start, int end, int k) {
   if (k == i)
     return pivot;
   else if (k < i)
-    return select_k(v, start, i - 1, k);
+    return select_median(v, k, start, i - 1);
   else
-    return select_k(v, j + 1, end, k - i);
+    return select_median(v, k, j + 1, end);
 }
 
 void quick_sort2(std::vector<int>& v, int start, int end) {
@@ -142,7 +142,7 @@ void quick_sort2(std::vector<int>& v, int start, int end) {
 
   int len = end - start + 1,
     m = start + (len - len % 2) / 2 - 1,
-    pivot = select_k(v, start, end, m),
+    pivot = select_median(v, m, start, end),
     i = start - 1,
     j = end + 1;
   for (;;) {
