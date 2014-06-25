@@ -52,26 +52,31 @@ std::vector<T> schedule(const std::vector<T>& tasks) {
     std::cout << std::endl;
   }
 
+  std::vector<int> v(tasks.size() + 1, 0);
+  std::vector<int> v_last(tasks.size() + 1, -1);
+  int last = -1;
+  for (auto& t : tasks_end) {
+    int w = t.value;
+    int p = prior[t.i];
+    if (p != -1)
+      w += v[p];
+    int wlast = last == -1 ? 0 : v[last];
+    last = w > wlast ? t.i : last;
+    v[t.i] = std::max(w, wlast);
+    v_last[t.i] = last;
+  }
+
   std::vector<T> result;
-  std::vector<int> w(tasks.size() + 1, 0);
-  for (auto& tend : tasks_end) {
-    // TODO
+  while (last != -1) {
+    const T& t = tasks[last - 1];
+    result.push_back(t);
+    int p = prior[t.i];
+    last = p == -1 ? -1 : v_last[p];
   }
   return result;
 }
 
-int main() {
-  std::cout << "Weighted Interval Scheduling\n" << std::endl;
-
-  std::vector<T> tasks {
-    T(1, 10, 30, 700),
-    T(2, 10, 20, 300),
-    T(3, 50, 60, 400),
-    T(4, 20, 30, 100),
-    T(5, 50, 80, 300),
-    T(6, 40, 70, 200),
-  };
-
+void execute(const std::vector<T>& tasks) {
   std::cout << "Tasks:" << std::endl;
   std::cout << tasks << std::endl;
 
@@ -79,4 +84,55 @@ int main() {
   
   std::cout << "\nSchedule:" << std::endl;
   std::cout << result << std::endl;
+}
+
+int main() {
+  std::cout << "Weighted Interval Scheduling\n" << std::endl;
+
+  {
+    std::cout << "Case 1\n" << std::endl;
+    int i = 1;
+    std::vector<T> tasks {
+      T(i, 10, 30, 700),
+	T(++i, 10, 20, 300),
+	T(++i, 50, 60, 400),
+	T(++i, 20, 30, 100),
+	T(++i, 50, 80, 300),
+	T(++i, 40, 70, 200),
+	};
+    execute(tasks);
+  }
+
+  {
+    std::cout << "Case 2\n" << std::endl;
+    int i = 1;
+    std::vector<T> tasks {
+      T(i, 10, 20, 6),
+	T(++i, 15, 25, 5),
+	T(++i, 25, 30, 10),
+	};
+    execute(tasks);
+  }
+
+  {
+    std::cout << "Case 3\n" << std::endl;
+    int i = 1;
+    std::vector<T> tasks {
+      T(i, 10, 20, 2),
+	T(++i, 20, 30, 3),
+	T(++i, 30, 40, 5),
+	};
+    execute(tasks);
+  }
+
+  {
+    std::cout << "Case 4\n" << std::endl;
+    int i = 1;
+    std::vector<T> tasks {
+      T(i, 10, 20, 5),
+	T(++i, 15, 25, 6),
+	T(++i, 20, 30, 10),
+	};
+    execute(tasks);
+  }
 }
