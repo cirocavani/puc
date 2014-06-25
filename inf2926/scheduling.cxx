@@ -18,16 +18,35 @@ std::ostream& operator<<(std::ostream& out, const std::vector<T>& v) {
   return out;
 }
 
+void print(const std::string title, const std::vector<T>& tasks) {
+  std::cout << title << std::endl;
+  std::cout << tasks << std::endl;
+}
+
+void print(const std::string title, const std::vector<T>& tasks, const std::vector<int> prior) {
+  std::cout << title << std::endl;
+  for (int i = 1; i < prior.size(); ++i) {
+    const T& t = tasks[i - 1];
+    int p = prior[i];
+    std::cout << t << " prior ";
+    if (p == -1)
+      std::cout << "none";
+    else
+      std::cout << tasks[p - 1];
+    std::cout << std::endl;
+  }
+}
+ 
 std::vector<T> schedule(const std::vector<T>& tasks) {
   std::vector<T> tasks_begin = tasks; // copy
   std::sort(tasks_begin.begin(), tasks_begin.end(), [](const T& i, const T& j) { return i.begin < j.begin; });
-  std::cout << "Tasks sorted by begin:" << std::endl;
-  std::cout << tasks_begin << std::endl;
+
+  print("Tasks sorted by begin:", tasks_begin);
 
   std::vector<T> tasks_end = tasks; // copy
   std::sort(tasks_end.begin(), tasks_end.end(), [](const T& i, const T& j) { return i.end < j.end; });
-  std::cout << "Tasks sorted by end:" << std::endl;
-  std::cout << tasks_end << std::endl;
+  
+  print("Tasks sorted by end:", tasks_end);
 
   std::vector<int> prior(tasks.size() + 1, -1);
   int p = -1;
@@ -39,18 +58,8 @@ std::vector<T> schedule(const std::vector<T>& tasks) {
     }
     prior[tbegin.i] = p;
   }
-  
-  std::cout << "Prior Tasks:" << std::endl;
-  for (int i = 1; i < prior.size(); ++i) {
-    const T& t = tasks[i - 1];
-    int p = prior[i];
-    std::cout << t << " prior ";
-    if (p == -1)
-      std::cout << "none";
-    else
-      std::cout << tasks[p - 1];
-    std::cout << std::endl;
-  }
+
+  print("Prior Tasks:", tasks, prior);
 
   std::vector<int> v(tasks.size() + 1, 0);
   std::vector<int> v_last(tasks.size() + 1, -1);
@@ -77,13 +86,11 @@ std::vector<T> schedule(const std::vector<T>& tasks) {
 }
 
 void execute(const std::vector<T>& tasks) {
-  std::cout << "Tasks:" << std::endl;
-  std::cout << tasks << std::endl;
+  print("Tasks:", tasks);
 
   std::vector<T> result = schedule(tasks);
   
-  std::cout << "\nSchedule:" << std::endl;
-  std::cout << result << std::endl;
+  print("\nSchedule:", result);
 }
 
 int main() {
